@@ -132,10 +132,11 @@
       background:#fff;
     }
 
-   li{
+li{
   display: grid;
-  grid-template-columns: auto 1fr auto; /* ← 左・本文・右 */
+  grid-template-columns: auto 1fr auto; /* 左：チェック / 中央：本文 / 右：削除 */
   align-items: flex-start;
+  justify-items: start;   /* ← 中央寄りを完全に防ぐ決定打 */
   gap: 10px;
 
   padding: 12px 12px;
@@ -435,6 +436,7 @@ function render() {
   </script>
 </body>
 </html>
+
 
 
 
