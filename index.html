@@ -127,13 +127,16 @@
       background:#fff;
     }
 
-    li{
-  display:flex;
-  align-items:flex-start;   /* ← ここが決定打（centerをやめる） */
-  gap:10px;
-  padding:12px 12px;
-  border-bottom:1px solid var(--stroke);
+   li{
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* ← 左・本文・右 */
+  align-items: flex-start;
+  gap: 10px;
+
+  padding: 12px 12px;
+  border-bottom: 1px solid var(--stroke);
 }
+
 
 
  /* タイトル（編集ボタン）を “テキスト” に見せる */
@@ -362,6 +365,7 @@
   </script>
 </body>
 </html>
+
 
 
 
