@@ -214,16 +214,16 @@
         }
 
         listEl.innerHTML = todos.map(t => {
-          const cls = t.done ? "done" : "";
-          return `
-            <li class="${cls}" data-id="${escapeText(t.id)}">
-              <input class="toggle" type="checkbox" ${t.done ? "checked" : ""} aria-label="完了切替" />
-              <div class="title">${escapeText(t.title)}</div>
-              <button class="del" type="button" aria-label="削除">削除</button>
-            </li>
-          `;
-        }).join("");
-      }
+  const cls = t.done ? "done" : "";
+  return `
+    <li class="${cls}" data-id="${escapeText(t.id)}">
+      <input class="toggle" type="checkbox" ${t.done ? "checked" : ""} aria-label="完了切替" />
+      <button class="title edit" type="button" aria-label="タイトル編集">${escapeText(t.title)}</button>
+      <button class="del" type="button" aria-label="削除">削除</button>
+    </li>
+  `;
+}).join("");
+
 
       function add() {
         const title = input.value.trim();
@@ -281,6 +281,7 @@
   </script>
 </body>
 </html>
+
 
 
 
