@@ -237,6 +237,17 @@
   color: var(--muted);
   margin-top: 6px;
 }
+.content{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;  /* ← 中身を左寄せ固定 */
+}
+
+.title,
+.created{
+  width: 100%;
+  text-align: left;         /* ← 改行も左詰め */
+}    
 
   </style>
 </head>
@@ -424,6 +435,7 @@ function render() {
   </script>
 </body>
 </html>
+
 
 
 
