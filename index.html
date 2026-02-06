@@ -261,26 +261,51 @@
       });
 
       listEl.addEventListener("click", (e) => {
-        const li = e.target.closest("li[data-id]");
-        if (!li) return;
-        const id = li.getAttribute("data-id");
-        if (e.target.classList.contains("del")) remove(id);
-      });
+  const li = e.target.closest("li[data-id]");
+  if (!li) return;
+  const id = li.getAttribute("data-id");
 
-      listEl.addEventListener("change", (e) => {
-        const li = e.target.closest("li[data-id]");
-        if (!li) return;
-        const id = li.getAttribute("data-id");
-        if (e.target.classList.contains("toggle")) toggle(id, e.target.checked);
-      });
+  // タイトルタップで編集（インライン編集）
+  if (e.target.classList.contains("edit")) {
+    const current = todos.find(x => x.id === id);
+    if (!current) return;
 
-      load();
+    const inputEl = document.createElement("input");
+    inputEl.type = "text";
+    inputEl.value = current.title;
+    inputEl.className = "editInput";
+    inputEl.setAttribute("aria-label", "ToDoタイトル編集");
+
+    e.target.replaceWith(inputEl);
+    inputEl.focus();
+    inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+
+    const finish = () => {
+      const next = inputEl.value.trim();
+      if (next) {
+        current.title = next;
+        save();
+      }
       render();
-      input.focus();
-    })();
-  </script>
-</body>
-</html>
+    };
+
+    inputEl.addEventListener("blur", finish, { once: true });
+    inputEl.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") finish();
+      if (ev.key === "Escape") render(); // キャンセル
+    });
+
+    return;
+  }
+
+  // 削除
+  if (e.target.classList.contains("del")) {
+    remove(id);
+    return;
+  }
+});
+
+
 
 
 
