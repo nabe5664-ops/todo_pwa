@@ -163,6 +163,26 @@ li{
   margin: 0;
   color: var(--text);
 }
+
+ /* iOS対策：本文エリアを左端＆幅いっぱいに固定 */
+.content{
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+  text-align: left !important;
+}
+
+.title,
+.created{
+  align-self: stretch;
+  width: 100%;
+  text-align: left !important;
+}
+
+li{
+  text-align: left !important;
+}
+   
     
 
 
@@ -436,6 +456,7 @@ function render() {
   </script>
 </body>
 </html>
+
 
 
 
