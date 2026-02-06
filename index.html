@@ -137,6 +137,27 @@
   border-bottom: 1px solid var(--stroke);
 }
 
+/* 中央コンテンツ（本文エリア） */
+.content{
+  width: 100%;
+}
+
+/* タイトル */
+.title{
+  display: block;
+  width: 100%;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
+
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--text);
+}
+    
 
 
  /* タイトル（編集ボタン）を “テキスト” に見せる */
@@ -263,7 +284,12 @@
           return `
             <li class="${cls}" data-id="${escapeText(t.id)}">
               <input class="toggle" type="checkbox" ${t.done ? "checked" : ""} aria-label="完了切替" />
-              <button class="title edit" type="button" aria-label="タイトル編集">${escapeText(t.title)}</button>
+              <div class="content">
+  <button class="title edit" type="button" aria-label="タイトル編集">
+    ${escapeText(t.title)}
+  </button>
+</div>
+
               <button class="del" type="button" aria-label="削除">削除</button>
             </li>
           `;
@@ -365,6 +391,7 @@
   </script>
 </body>
 </html>
+
 
 
 
