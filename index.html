@@ -136,20 +136,24 @@
     }
     li:last-child{ border-bottom:none; }
 
-    /* タイトル（編集ボタン）を “テキスト” に見せる */
-    .title{
-      flex:1;
-      font-size:16px;
-      word-break:break-word;
-      padding:0;
-      margin:0;
-      background:transparent;
-      box-shadow:none;
-      border-radius:10px;
-      color:var(--text);
-      text-align:left;
-      line-height:1.3;
-    }
+  /* タイトル（編集ボタン）を “テキスト” に見せる */
+.title{
+  flex:1;
+  font-size:16px;
+  padding:0;
+  margin:0;
+
+  text-align: left;
+  white-space: pre-wrap;   /* 改行を有効に */
+  word-break: break-word;  /* 日本語の自然改行 */
+  line-height: 1.5;
+
+  background: transparent;
+  box-shadow: none;
+  border-radius: 10px;
+  color: var(--text);
+}
+
     .title:hover{ filter:none; }
     .title:active{ transform:none; }
     .title:focus{
@@ -354,6 +358,7 @@
   </script>
 </body>
 </html>
+
 
 
 
