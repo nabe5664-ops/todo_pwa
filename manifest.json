@@ -1,7 +1,7 @@
 {
   "name": "ToDo",
   "short_name": "ToDo",
-  "start_url": "/todo_pwa/?source=pwa",
+  "start_url": "/todo_pwa/?source=pwa&v=11",
   "scope": "/todo_pwa/",
   "display": "standalone",
   "background_color": "#f6f7fb",
