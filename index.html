@@ -46,9 +46,12 @@
       border-radius: 12px;
       background: #111;
       color: #fff;
+      cursor: pointer;
     }
+    /* iOS Safari対策：disabled自体を使わない運用にする（スタイルだけ残してもOK） */
     button:disabled {
       opacity: .35;
+      cursor: not-allowed;
     }
     ul {
       list-style: none;
@@ -68,10 +71,23 @@
     .title {
       flex: 1;
       font-size: 16px;
+      word-break: break-word;
     }
     .done .title {
       color: #888;
       text-decoration: line-through;
+    }
+    .mini {
+      font-size: 12px;
+      color: #777;
+    }
+    .del {
+      background: transparent;
+      border: 1px solid #ddd;
+      color: #111;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -82,12 +98,145 @@
 
     <div class="card">
       <div class="row">
-        <input id="newTitle" placeholder="追加するToDo" />
-        <button id="addBtn" disabled>追加</button>
+        <input id="newTitle" placeholder="追加するToDo" autocomplete="off" />
+        <!-- disabledは付けない（常に押せる） -->
+        <button id="addBtn" type="button">追加</button>
+      </div>
+
+      <div class="mini" style="margin-top:8px;">
+        タップで完了 / 右の削除で消す（データは端末内に保存）
       </div>
 
       <ul id="list"></ul>
     </div>
   </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "todo_pwa_items_v1";
+
+      const input = document.getElementById("newTitle");
+      const btn = document.getElementById("addBtn");
+      const listEl = document.getElementById("list");
+
+      /** @type {{id:string,title:string,done:boolean,createdAt:number}[]} */
+      let todos = [];
+
+      function load() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          if (Array.isArray(parsed)) todos = parsed;
+        } catch (e) {
+          todos = [];
+        }
+      }
+
+      function save() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+      }
+
+      function escapeText(s) {
+        return String(s).replace(/[&<>"']/g, (c) => {
+          return ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[c];
+        });
+      }
+
+      function render() {
+        if (!todos.length) {
+          listEl.innerHTML = '<li class="mini" style="border-bottom:none;">まだToDoがありません</li>';
+          return;
+        }
+
+        listEl.innerHTML = todos.map(t => {
+          const cls = t.done ? "done" : "";
+          return `
+            <li class="${cls}" data-id="${escapeText(t.id)}">
+              <input class="toggle" type="checkbox" ${t.done ? "checked" : ""} aria-label="完了切替" />
+              <div class="title">${escapeText(t.title)}</div>
+              <button class="del" type="button" aria-label="削除">削除</button>
+            </li>
+          `;
+        }).join("");
+      }
+
+      function add() {
+        const title = input.value.trim();
+        if (!title) return; // 空は追加しない（disabled制御の代わり）
+
+        const item = {
+          id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + "_" + Math.random().toString(16).slice(2),
+          title,
+          done: false,
+          createdAt: Date.now(),
+        };
+
+        todos.unshift(item);
+        save();
+        render();
+
+        input.value = "";
+        input.focus();
+      }
+
+      function toggle(id, done) {
+        const t = todos.find(x => x.id === id);
+        if (!t) return;
+        t.done = done;
+        save();
+        render();
+      }
+
+      function remove(id) {
+        todos = todos.filter(x => x.id !== id);
+        save();
+        render();
+      }
+
+      // ✅ iOS Safari対策：inputイベントでdisabled制御しない（何もしない）
+      input.addEventListener("input", () => {});
+
+      // 追加ボタン
+      btn.addEventListener("click", () => add());
+
+      // Enterで追加（iPhoneでも反応させる）
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") add();
+      });
+
+      // リストのイベント委譲
+      listEl.addEventListener("click", (e) => {
+        const li = e.target.closest("li[data-id]");
+        if (!li) return;
+        const id = li.getAttribute("data-id");
+
+        if (e.target.classList.contains("del")) {
+          remove(id);
+          return;
+        }
+      });
+
+      listEl.addEventListener("change", (e) => {
+        const li = e.target.closest("li[data-id]");
+        if (!li) return;
+        const id = li.getAttribute("data-id");
+
+        if (e.target.classList.contains("toggle")) {
+          toggle(id, e.target.checked);
+        }
+      });
+
+      // 初期化
+      load();
+      render();
+      input.focus();
+    })();
+  </script>
 </body>
 </html>
