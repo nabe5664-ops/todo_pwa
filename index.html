@@ -5,10 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>ToDo</title>
 
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#6366f1">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- iOS: ホーム画面アイコン（PNG推奨） -->
+  <link rel="apple-touch-icon" href="icon-180.png">
+
+  <!-- ブラウザ用 -->
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
 
   <style>
     :root{
@@ -129,10 +136,25 @@
     }
     li:last-child{ border-bottom:none; }
 
+    /* タイトル（編集ボタン）を “テキスト” に見せる */
     .title{
       flex:1;
       font-size:16px;
       word-break:break-word;
+      padding:0;
+      margin:0;
+      background:transparent;
+      box-shadow:none;
+      border-radius:10px;
+      color:var(--text);
+      text-align:left;
+      line-height:1.3;
+    }
+    .title:hover{ filter:none; }
+    .title:active{ transform:none; }
+    .title:focus{
+      outline:none;
+      box-shadow:0 0 0 4px rgba(99,102,241,.12);
     }
 
     .done .title{
@@ -154,6 +176,18 @@
       border-radius:12px;
       font-size:14px;
     }
+
+    /* 編集中input */
+    .editInput{
+      flex:1;
+      font-size:16px;
+      padding:10px 10px;
+      border:1px solid rgba(99,102,241,.35);
+      border-radius:12px;
+      outline:none;
+      background:#fff;
+      box-shadow:0 0 0 4px rgba(99,102,241,.12);
+    }
   </style>
 </head>
 
@@ -167,7 +201,7 @@
         <button id="addBtn" type="button">追加</button>
       </div>
 
-      <div class="mini">タップで完了 / 右の削除で消す（データは端末内に保存）</div>
+      <div class="mini">タイトルをタップで編集 / チェックで完了 / 削除で消去（端末内保存）</div>
 
       <ul id="list"></ul>
     </div>
@@ -214,22 +248,23 @@
         }
 
         listEl.innerHTML = todos.map(t => {
-  const cls = t.done ? "done" : "";
-  return `
-    <li class="${cls}" data-id="${escapeText(t.id)}">
-      <input class="toggle" type="checkbox" ${t.done ? "checked" : ""} aria-label="完了切替" />
-      <button class="title edit" type="button" aria-label="タイトル編集">${escapeText(t.title)}</button>
-      <button class="del" type="button" aria-label="削除">削除</button>
-    </li>
-  `;
-}).join("");
-
+          const cls = t.done ? "done" : "";
+          return `
+            <li class="${cls}" data-id="${escapeText(t.id)}">
+              <input class="toggle" type="checkbox" ${t.done ? "checked" : ""} aria-label="完了切替" />
+              <button class="title edit" type="button" aria-label="タイトル編集">${escapeText(t.title)}</button>
+              <button class="del" type="button" aria-label="削除">削除</button>
+            </li>
+          `;
+        }).join("");
+      }
 
       function add() {
         const title = input.value.trim();
         if (!title) return;
 
-        const id = (crypto && crypto.randomUUID) ? crypto.randomUUID()
+        const id = (window.crypto && crypto.randomUUID)
+          ? crypto.randomUUID()
           : String(Date.now()) + "_" + Math.random().toString(16).slice(2);
 
         todos.unshift({ id, title, done: false, createdAt: Date.now() });
@@ -261,49 +296,65 @@
       });
 
       listEl.addEventListener("click", (e) => {
-  const li = e.target.closest("li[data-id]");
-  if (!li) return;
-  const id = li.getAttribute("data-id");
+        const li = e.target.closest("li[data-id]");
+        if (!li) return;
+        const id = li.getAttribute("data-id");
 
-  // タイトルタップで編集（インライン編集）
-  if (e.target.classList.contains("edit")) {
-    const current = todos.find(x => x.id === id);
-    if (!current) return;
+        // タイトルタップで編集（インライン編集）
+        if (e.target.classList.contains("edit")) {
+          const current = todos.find(x => x.id === id);
+          if (!current) return;
 
-    const inputEl = document.createElement("input");
-    inputEl.type = "text";
-    inputEl.value = current.title;
-    inputEl.className = "editInput";
-    inputEl.setAttribute("aria-label", "ToDoタイトル編集");
+          const inputEl = document.createElement("input");
+          inputEl.type = "text";
+          inputEl.value = current.title;
+          inputEl.className = "editInput";
+          inputEl.setAttribute("aria-label", "ToDoタイトル編集");
 
-    e.target.replaceWith(inputEl);
-    inputEl.focus();
-    inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+          e.target.replaceWith(inputEl);
+          inputEl.focus();
+          inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
 
-    const finish = () => {
-      const next = inputEl.value.trim();
-      if (next) {
-        current.title = next;
-        save();
-      }
+          const finish = () => {
+            const next = inputEl.value.trim();
+            if (next) {
+              current.title = next;
+              save();
+            }
+            render();
+          };
+
+          inputEl.addEventListener("blur", finish, { once: true });
+          inputEl.addEventListener("keydown", (ev) => {
+            if (ev.key === "Enter") finish();
+            if (ev.key === "Escape") render(); // キャンセル
+          });
+
+          return;
+        }
+
+        // 削除
+        if (e.target.classList.contains("del")) {
+          remove(id);
+          return;
+        }
+      });
+
+      listEl.addEventListener("change", (e) => {
+        const li = e.target.closest("li[data-id]");
+        if (!li) return;
+        const id = li.getAttribute("data-id");
+        if (e.target.classList.contains("toggle")) toggle(id, e.target.checked);
+      });
+
+      load();
       render();
-    };
+      input.focus();
+    })();
+  </script>
+</body>
+</html>
 
-    inputEl.addEventListener("blur", finish, { once: true });
-    inputEl.addEventListener("keydown", (ev) => {
-      if (ev.key === "Enter") finish();
-      if (ev.key === "Escape") render(); // キャンセル
-    });
-
-    return;
-  }
-
-  // 削除
-  if (e.target.classList.contains("del")) {
-    remove(id);
-    return;
-  }
-});
 
 
 
