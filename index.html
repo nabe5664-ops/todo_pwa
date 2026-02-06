@@ -278,41 +278,42 @@
         }[c]));
       }
 
-      function render() {
-        if (!todos.length) {
-          listEl.innerHTML = '<li class="mini" style="border-bottom:none;">まだToDoがありません</li>';
-          return;
-        }
+function render() {
+  if (!todos.length) {
+    listEl.innerHTML = '<li class="mini" style="border-bottom:none;">まだToDoがありません</li>';
+    return;
+  }
 
-listEl.innerHTML = todos.map(t => {
-  const cls = t.done ? "done" : "";
-  return `
-    <li class="${cls}" data-id="${escapeText(t.id)}">
-      <input
-        class="toggle"
-        type="checkbox"
-        ${t.done ? "checked" : ""}
-        aria-label="完了切替"
-      />
+  listEl.innerHTML = todos.map(t => {
+    const cls = t.done ? "done" : "";
+    const created = t.createdAt ? new Date(t.createdAt).toLocaleString() : "";
 
-      <div class="content">
-        <button
-          class="title edit"
-          type="button"
-          aria-label="タイトル編集"
-        >
-          ${escapeText(t.title)}
-        </button>
+    return `
+      <li class="${cls}" data-id="${escapeText(t.id)}">
+        <input
+          class="toggle"
+          type="checkbox"
+          ${t.done ? "checked" : ""}
+          aria-label="完了切替"
+        />
 
-        <small class="created">
-          ${new Date(t.createdAt).toLocaleString()}
-        </small>
-      </div>
+        <div class="content">
+          <button
+            class="title edit"
+            type="button"
+            aria-label="タイトル編集"
+          >
+            ${escapeText(t.title)}
+          </button>
 
-      <button class="del" type="button" aria-label="削除">削除</button>
-    </li>
-  `;
-}).join("");
+          <small class="created">${escapeText(created)}</small>
+        </div>
+
+        <button class="del" type="button" aria-label="削除">削除</button>
+      </li>
+    `;
+  }).join("");
+}
 
 
       function add() {
@@ -410,6 +411,7 @@ listEl.innerHTML = todos.map(t => {
   </script>
 </body>
 </html>
+
 
 
 
