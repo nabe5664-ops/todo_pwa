@@ -277,41 +277,47 @@
         }[c]));
       }
 
-      function render() {
-        if (!todos.length) {
-          listEl.innerHTML = '<li class="mini" style="border-bottom:none;">まだToDoがありません</li>';
-          return;
-        }
+function render() {
+  if (!todos.length) {
+    listEl.innerHTML = '<li class="mini" style="border-bottom:none;">まだToDoがありません</li>';
+    return;
+  }
 
-        listEl.innerHTML = todos.map(t => {
-          const cls = t.done ? "done" : "";
-          const created = t.createdAt ? new Date(t.createdAt).toLocaleString() : "";
+  listEl.innerHTML = todos.map(t => {
+    const cls = t.done ? "done" : "";
+    const created = t.createdAt ? new Date(t.createdAt).toLocaleString() : "";
 
-          return `
-            <li class="${cls}" data-id="${escapeText(t.id)}">
-              <input
-                class="toggle"
-                type="checkbox"
-                ${t.done ? "checked" : ""}
-                aria-label="完了切替"
-              />
+    return `
+      <li class="${cls}" data-id="${escapeText(t.id)}"
+          style="display:flex;align-items:flex-start;justify-content:flex-start;gap:10px;text-align:left;">
+        <input
+          class="toggle"
+          type="checkbox"
+          ${t.done ? "checked" : ""}
+          aria-label="完了切替"
+        />
 
-              <div class="content">
-                <div
-                  class="title edit"
-                  role="button"
-                  tabindex="0"
-                  aria-label="タイトル編集"
-                >${escapeText(t.title)}</div>
+        <div class="content"
+             style="flex:1 1 auto;min-width:0;text-align:left;display:flex;flex-direction:column;align-items:flex-start;">
+          <div
+            class="title edit"
+            role="button"
+            tabindex="0"
+            aria-label="タイトル編集"
+            style="width:100%;display:block;text-align:left;white-space:pre-wrap;word-break:break-word;line-height:1.5;margin:0;padding:0;background:transparent;border:0;"
+          >${escapeText(t.title)}</div>
 
-                <small class="created">${escapeText(created)}</small>
-              </div>
+          <small class="created"
+                 style="width:100%;display:block;text-align:left;font-size:12px;margin-top:6px;"
+          >${escapeText(created)}</small>
+        </div>
 
-              <button class="del" type="button" aria-label="削除">削除</button>
-            </li>
-          `;
-        }).join("");
-      }
+        <button class="del" type="button" aria-label="削除">削除</button>
+      </li>
+    `;
+  }).join("");
+}
+
 
       function add() {
         const title = input.value.trim();
@@ -427,6 +433,7 @@
   </script>
 </body>
 </html>
+
 
 
 
