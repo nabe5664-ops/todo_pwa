@@ -214,20 +214,33 @@
       font-size:14px;
     }
 
-    /* 編集中input */
-    .editInput{
-      flex:1;
-      font-size:16px;
-      padding:10px 10px;
-      border:1px solid rgba(99,102,241,.35);
-      border-radius:12px;
-      outline:none;
-      background:#fff;
-      box-shadow:0 0 0 4px rgba(99,102,241,.12);
-    }
+/* 編集中input */
+.editInput{
+  flex:1;
+  font-size:16px;
+  padding:10px 10px;
+  border:1px solid rgba(99,102,241,.35);
+  border-radius:12px;
+  outline:none;
+  background:#fff;
+  box-shadow:0 0 0 4px rgba(99,102,241,.12);
+}
+
+.content { 
+  text-align: left; 
+}
+
+.created{
+  display: block;
+  text-align: left;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
   </style>
 </head>
-
+ 
 <body>
   <div class="wrap">
     <h1>ToDo</h1>
@@ -411,6 +424,7 @@ function render() {
   </script>
 </body>
 </html>
+
 
 
 
