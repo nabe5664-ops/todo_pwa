@@ -136,16 +136,19 @@
     }
     li:last-child{ border-bottom:none; }
 
-  /* タイトル（編集ボタン）を “テキスト” に見せる */
+ /* タイトル（編集ボタン）を “テキスト” に見せる */
 .title{
-  flex:1;
+  flex: 1;
+  width: 100%;          /* ← これが決定打 */
+  display: block;       /* ← ボタン感を消す */
+
   font-size:16px;
   padding:0;
   margin:0;
 
   text-align: left;
-  white-space: pre-wrap;   /* 改行を有効に */
-  word-break: break-word;  /* 日本語の自然改行 */
+  white-space: pre-wrap;
+  word-break: break-word;
   line-height: 1.5;
 
   background: transparent;
@@ -154,6 +157,7 @@
   color: var(--text);
 }
 
+    
     .title:hover{ filter:none; }
     .title:active{ transform:none; }
     .title:focus{
@@ -358,6 +362,7 @@
   </script>
 </body>
 </html>
+
 
 
 
